@@ -28,4 +28,11 @@ class JPushFactoryTest {
         PushResult pushResult = jPush.push("jpush test", "# markdown test\n - 111");
         log.info(pushResult.toString());
     }
+
+    @Test
+    void buildWxServer3() {
+        JPush jPush = JPushFactory.buildCoolPush(System.getenv("PUSH_PLUS_TOKEN"), "test_qun1");
+        PushResult pushResult = jPush.push("jpush test", "# markdown test\n - 111");
+        log.info(pushResult.toString());
+    }
 }

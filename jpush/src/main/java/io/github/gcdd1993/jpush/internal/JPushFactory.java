@@ -1,7 +1,6 @@
 package io.github.gcdd1993.jpush.internal;
 
 import io.github.gcdd1993.jpush.JPush;
-import io.github.gcdd1993.jpush.internal.WxServerPushImpl;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -23,6 +22,8 @@ public class JPushFactory {
      */
     private static final String PUSH_PLUS_DOMAIN = "pushplus.hxtrip.com";
 
+    private static final String COOL_PUSH_DOMAIN = "push.xuthus.cc";
+
     public static JPush buildWxServer(String scKey) {
         return new WxServerPushImpl(scKey, WX_SERVER_DOMAIN);
     }
@@ -33,6 +34,14 @@ public class JPushFactory {
 
     public static JPush buildPushPlus(String token, String topic, String template) {
         return new PushPlusJPushImpl(token, topic, PUSH_PLUS_DOMAIN, template);
+    }
+
+    public static JPush buildCoolPush(String sKey) {
+        return new CoolPushJPushImpl(sKey, "send");
+    }
+
+    public static JPush buildCoolPush(String sKey, String mode) {
+        return new CoolPushJPushImpl(sKey, mode);
     }
 
 }
