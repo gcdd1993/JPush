@@ -3,10 +3,12 @@ package io.github.gcdd1993.jpush.internal;
 import com.alibaba.fastjson.JSON;
 import io.github.gcdd1993.jpush.PushResult;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
@@ -28,12 +30,8 @@ public class WxServerPushImpl
      */
     private final String scKey;
 
-    protected WxServerPushImpl(String scKey, String domain) {
-        this(scKey, domain, null);
-    }
-
-    protected WxServerPushImpl(String scKey, String domain, Proxy proxy) {
-        super(domain, proxy);
+    WxServerPushImpl(String scKey, String domain) {
+        super(domain, null);
         this.scKey = scKey;
     }
 
@@ -72,7 +70,7 @@ public class WxServerPushImpl
             }
         } catch (IOException ex) {
             log.error("cannot push to server. title {}, content {}", title, content, ex);
-            return PushResult.fail("调用推送服务接口失败");
+            return PushResult.fail("调用Server酱服务失败");
         }
     }
 }

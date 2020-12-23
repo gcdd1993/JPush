@@ -16,8 +16,15 @@ class JPushFactoryTest {
     private static final Logger log = LoggerFactory.getLogger(JPushFactoryTest.class);
 
     @Test
-    void buildWxServer() {
+    void buildWxServer1() {
         JPush jPush = JPushFactory.buildWxServer(System.getenv("SCKEY"));
+        PushResult pushResult = jPush.push("jpush test", "# markdown test\n - 111");
+        log.info(pushResult.toString());
+    }
+
+    @Test
+    void buildWxServer2() {
+        JPush jPush = JPushFactory.buildPushPlus(System.getenv("PUSH_PLUS_TOKEN"), "test_qun1");
         PushResult pushResult = jPush.push("jpush test", "# markdown test\n - 111");
         log.info(pushResult.toString());
     }

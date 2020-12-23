@@ -13,8 +13,26 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class JPushFactory {
+    /**
+     * Server酱域名
+     */
+    private static final String WX_SERVER_DOMAIN = "sc.ftqq.com";
+
+    /**
+     * push+域名
+     */
+    private static final String PUSH_PLUS_DOMAIN = "pushplus.hxtrip.com";
 
     public static JPush buildWxServer(String scKey) {
-        return new WxServerPushImpl("SCU138193T2b2331d7d6b3da86610a44e6a49a4de65fe2bf9c86265", "sc.ftqq.com");
+        return new WxServerPushImpl(scKey, WX_SERVER_DOMAIN);
     }
+
+    public static JPush buildPushPlus(String token, String topic) {
+        return new PushPlusJPushImpl(token, topic, PUSH_PLUS_DOMAIN);
+    }
+
+    public static JPush buildPushPlus(String token, String topic, String template) {
+        return new PushPlusJPushImpl(token, topic, PUSH_PLUS_DOMAIN, template);
+    }
+
 }
