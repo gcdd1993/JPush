@@ -1,0 +1,9 @@
+plugins {
+    id 'java-library'
+}
+dependencies {
+    api 'com.squareup.okhttp3:okhttp:4.9.0'
+    api 'com.alibaba:fastjson:1.2.75'
+    compileOnly 'ch.qos.logback:logback-classic:1.2.3'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.3'
+}

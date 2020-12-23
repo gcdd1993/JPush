@@ -1,0 +1,5 @@
+rootProject.name = 'JPush'
+
+include('jpush')
+include('jpush-spring-boot-starter')
+include('jpush-demo')

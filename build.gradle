@@ -1,0 +1,62 @@
+import java.nio.charset.StandardCharsets
+import java.text.SimpleDateFormat
+
+if (!System.properties['java.version'].startsWith('1.8')) {
+    throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use JRE 1.8 instead.')
+}
+
+allprojects { project ->
+    apply plugin: 'idea'
+    group 'io.github.gcdd1993'
+    version '1.0.0-SNAPSHOT'
+}
+
+subprojects { project ->
+    apply plugin: 'java'
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    tasks.withType(JavaCompile) {
+        options.encoding = StandardCharsets.UTF_8
+    }
+
+    jar {
+        enabled = true
+        manifest {
+            attributes(
+                    'Implementation-Title': project.name,
+                    'Implementation-Version': project.version,
+                    'Built-By': System.properties['user.name'],
+                    'Build-Timestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                    'Created-By': "Gradle ${gradle.gradleVersion}",
+                    'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                    'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+            )
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri('http://maven.aliyun.com/nexus/content/groups/public/')
+        }
+        maven {
+            url = uri('http://repo.maven.apache.org/maven2')
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.12'
+        annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+}
