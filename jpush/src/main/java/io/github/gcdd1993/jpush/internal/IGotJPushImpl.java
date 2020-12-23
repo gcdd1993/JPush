@@ -14,66 +14,40 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * IGot聚合推送
+ *
+ * <a href="https://github.com/wahao/Bark-MP-helper"></a>
+ *
  * @author gcdd1993
  * @date 2020/12/23
  * @since 1.0.0
  */
 @Slf4j
-public class PushPlusJPushImpl
+public class IGotJPushImpl
         extends AbstractJPushImpl {
-    private static final String DEFAULT_URL = "https://{0}/send/";
+    // 0-domain, 1-key
+    private static final String DEFAULT_URL = "https://{0}/{1}";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.get("application/json; charset=utf-8");
 
-    /**
-     * 用户令牌，可直接加到请求地址后，如：http://pushplus.hxtrip.com/send/{token}
-     */
-    private final String token;
-
-    /**
-     * 群组编码，不填仅发送给自己
-     */
+    private final String key;
     private final String topic;
 
-    /**
-     * 发送模板，默认为html
-     * <p>
-     * html	默认模板，支持html文本
-     * json	内容基于json格式展示
-     * cloudMonitor	阿里云监控报警定制模板
-     * jenkins	jenkins插件定制模板
-     * route	路由器插件定制模板
-     * 详见 <a href="https://pushplus.hxtrip.com/doc/guide/api.html"></a>
-     */
-    private final String template;
-
-    PushPlusJPushImpl(String domain, String token, String topic) {
-        this(domain, token, topic, "html");
-    }
-
-    PushPlusJPushImpl(String domain, String token, String topic, String template) {
-        super(domain, null);
-        this.token = token;
+    IGotJPushImpl(String domain, String key, String topic) {
+        super(domain);
+        this.key = key;
         this.topic = topic;
-        this.template = template;
-        this.requestBuilder
-                .addHeader("Content-Type", "application/json");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public PushResult push(String title, String content) {
-        RequestData requestData = new RequestData(
-                token,
-                title,
-                content,
-                topic,
-                template
-        );
         String pushUrl = MessageFormat.format(
                 DEFAULT_URL,
-                domain
+                domain,
+                key
         );
         try {
+            RequestData requestData = new RequestData(title, content, topic);
             RequestBody requestBody = RequestBody.Companion.create(JSON.toJSONString(requestData), MEDIA_TYPE_JSON);
             Request request = this.requestBuilder
                     .url(pushUrl)
@@ -85,17 +59,17 @@ public class PushPlusJPushImpl
             if (response.isSuccessful() && response.body() != null) {
                 String body = response.body().string();
                 Map<String, Object> res = JSON.parseObject(body, Map.class);
-                if (Objects.equals(res.get("code"), 200)) {
+                if (Objects.equals(res.get("ret"), 0)) {
                     return PushResult.success(body);
                 } else {
-                    return PushResult.fail((int) res.get("code"), (String) res.get("msg"));
+                    return PushResult.fail((int) res.get("ret"), (String) res.get("errMsg"));
                 }
             } else {
-                return PushResult.fail("调用PUSH+服务失败");
+                return PushResult.fail("调用IGot服务失败");
             }
         } catch (IOException ex) {
             log.error("cannot push to server. title {}, content {}", title, content, ex);
-            return PushResult.fail("调用PUSH+服务失败");
+            return PushResult.fail("调用IGot服务失败");
         }
     }
 
@@ -103,10 +77,20 @@ public class PushPlusJPushImpl
     @Getter
     @Setter
     private class RequestData {
-        private final String token;
+        public RequestData(String title, String content, String topic) {
+            this(title, content, null, null, null, topic);
+        }
+
         private final String title;
         private final String content;
+        // 推送携带的url
+        private final String url;
+        // 自动复制； 为1自动复制； 默认为1
+        private final String automaticallyCopy;
+        // 需要复制的文本内容
+        private final String copy;
+        // 目前仅在订阅消息下有效； 订阅者可通过推送主体选择是否接收消息
         private final String topic;
-        private final String template;
+        // 其余参数， 其他请求参数会作为调试参数以json的形式显示在推送内容中。
     }
 }

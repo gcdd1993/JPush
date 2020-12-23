@@ -23,7 +23,7 @@ import java.util.Objects;
 public class CoolPushJPushImpl
         extends AbstractJPushImpl {
     // 0-domain, 1-mode, 2-sKey
-    private static final String DEFAULT_URL = "{0}/{1}/{2}";
+    private static final String DEFAULT_URL = "https://{0}/{1}/{2}";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.get("application/json; charset=utf-8");
 
     /**
@@ -43,11 +43,11 @@ public class CoolPushJPushImpl
     /**
      * 默认mode是send，私聊推送
      */
-    CoolPushJPushImpl(String sKey, String domain) {
-        this(sKey, "send", domain);
+    CoolPushJPushImpl(String domain, String sKey) {
+        this(domain, sKey, "send");
     }
 
-    CoolPushJPushImpl(String sKey, String mode, String domain) {
+    CoolPushJPushImpl(String domain, String sKey, String mode) {
         super(domain);
         this.sKey = sKey;
         this.mode = mode;

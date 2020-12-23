@@ -4,6 +4,7 @@ plugins {
 dependencies {
     api 'com.squareup.okhttp3:okhttp:4.9.0'
     api 'com.alibaba:fastjson:1.2.75'
+    api 'commons-codec:commons-codec:1.15'
     compileOnly 'ch.qos.logback:logback-classic:1.2.3'
     testImplementation 'ch.qos.logback:logback-classic:1.2.3'
 }

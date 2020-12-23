@@ -30,8 +30,8 @@ public class WxServerPushImpl
      */
     private final String scKey;
 
-    WxServerPushImpl(String scKey, String domain) {
-        super(domain, null);
+    WxServerPushImpl(String domain, String scKey) {
+        super(domain);
         this.scKey = scKey;
     }
 

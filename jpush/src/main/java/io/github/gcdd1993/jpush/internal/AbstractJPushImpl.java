@@ -1,17 +1,14 @@
 package io.github.gcdd1993.jpush.internal;
 
 import io.github.gcdd1993.jpush.JPush;
-import io.github.gcdd1993.jpush.PushResult;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.CookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-import java.io.IOException;
 import java.net.Proxy;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author gcdd1993
@@ -42,13 +39,4 @@ public abstract class AbstractJPushImpl
         this.domain = domain;
     }
 
-    @Override
-    public CompletableFuture<PushResult> pushAsync(String title, String content) {
-        return CompletableFuture
-                .supplyAsync(() -> push(title, content))
-                .exceptionally(ex -> {
-                    log.error("cannot push to server. title {}, content {}", title, content, ex);
-                    return PushResult.fail("调用推送服务接口失败");
-                });
-    }
 }
