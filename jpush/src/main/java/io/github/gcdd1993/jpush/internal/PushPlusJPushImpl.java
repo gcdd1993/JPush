@@ -1,7 +1,6 @@
 package io.github.gcdd1993.jpush.internal;
 
 import com.alibaba.fastjson.JSON;
-import io.github.gcdd1993.jpush.JPushType;
 import io.github.gcdd1993.jpush.PushResult;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * Push plus 推送
+ *
  * @author gcdd1993
  * @since 2020/12/23
  */

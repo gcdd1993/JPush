@@ -21,7 +21,6 @@ import java.util.Objects;
 @Slf4j
 class CoolPushJPushImpl
         extends AbstractJPushImpl {
-    // 0-domain, 1-mode, 2-sKey
     private static final MediaType MEDIA_TYPE_JSON = MediaType.get("application/json; charset=utf-8");
 
     /**
