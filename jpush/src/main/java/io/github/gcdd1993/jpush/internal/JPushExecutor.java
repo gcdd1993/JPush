@@ -5,7 +5,7 @@ import io.github.gcdd1993.jpush.JPushType;
 import io.github.gcdd1993.jpush.PushResult;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +14,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
- * 构造工厂，创建JPush实例
+ * JPush执行器，允许添加多个JPush实现，然后一起推送
  *
  * @author gcdd1993
  * @since 2020/12/23
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JPushExecutor {
 
-    private final List<JPush> jPushList = new LinkedList<>();
+    private final Map<JPushType, JPush> jPushChain = new HashMap<>();
 
     private final ExecutorService executor;
 
@@ -44,16 +44,24 @@ public class JPushExecutor {
     public void add(JPushType type, Map<String, String> config) {
         switch (type) {
             case COOL:
-                jPushList.add(new CoolPushJPushImpl(config));
+                if (!jPushChain.containsKey(type)) {
+                    jPushChain.put(type, new CoolPushJPushImpl(config));
+                }
                 break;
             case IGOT:
-                jPushList.add(new IGotJPushImpl(config));
+                if (!jPushChain.containsKey(type)) {
+                    jPushChain.put(type, new IGotJPushImpl(config));
+                }
                 break;
             case SCT:
-                jPushList.add(new WxServerPushImpl(config));
+                if (!jPushChain.containsKey(type)) {
+                    jPushChain.put(type, new WxServerPushImpl(config));
+                }
                 break;
             case PUSH_PLUS:
-                jPushList.add(new PushPlusJPushImpl(config));
+                if (!jPushChain.containsKey(type)) {
+                    jPushChain.put(type, new PushPlusJPushImpl(config));
+                }
                 break;
             default:
                 throw new IllegalArgumentException("找不到对应的推送类型");
@@ -68,7 +76,8 @@ public class JPushExecutor {
      * @return 推送结果
      */
     public List<Future<PushResult>> pushAsync(String title, String content) {
-        return jPushList
+        return jPushChain
+                .values()
                 .stream()
                 .map(pusher -> executor.submit(() -> pusher.push(title, content)))
                 .collect(Collectors.toList());
@@ -82,7 +91,8 @@ public class JPushExecutor {
      * @return 推送结果
      */
     public List<PushResult> push(String title, String content) {
-        return jPushList
+        return jPushChain
+                .values()
                 .stream()
                 .map(pusher -> pusher.push(title, content))
                 .collect(Collectors.toList());
