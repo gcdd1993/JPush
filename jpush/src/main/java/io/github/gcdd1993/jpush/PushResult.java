@@ -1,28 +1,26 @@
 package io.github.gcdd1993.jpush;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * @author gcdd1993
  * @date 2020/12/23
  * @since 1.0.0
  */
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 public class PushResult {
     private int code;
     private String msg;
     private boolean success;
 
     public static PushResult success(String msg) {
-        PushResult pushResult = new PushResult();
-        pushResult.setCode(200);
-        pushResult.setMsg(msg);
-        pushResult.setSuccess(true);
-        return pushResult;
+        return PushResult.builder()
+                .code(200)
+                .msg(msg)
+                .success(true)
+                .build();
     }
 
     public static PushResult fail(String msg) {
@@ -30,10 +28,10 @@ public class PushResult {
     }
 
     public static PushResult fail(int code, String msg) {
-        PushResult pushResult = new PushResult();
-        pushResult.setCode(code);
-        pushResult.setMsg(msg);
-        pushResult.setSuccess(false);
-        return pushResult;
+        return PushResult.builder()
+                .code(code)
+                .msg(msg)
+                .success(false)
+                .build();
     }
 }

@@ -12,12 +12,10 @@ import java.time.temporal.ChronoUnit;
 
 /**
  * @author gcdd1993
- * @date 2020/12/23
- * @since 1.0.0
+ * @since 2020/12/23
  */
 @Slf4j
-public abstract class AbstractJPushImpl
-        implements JPush {
+abstract class AbstractJPushImpl implements JPush {
     protected final OkHttpClient.Builder okHttpClientBuilder;
     protected final Request.Builder requestBuilder;
     protected final String domain;

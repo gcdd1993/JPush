@@ -1,12 +1,12 @@
 package io.github.gcdd1993.jpush.internal;
 
 import com.alibaba.fastjson.JSON;
+import io.github.gcdd1993.jpush.JPushType;
 import io.github.gcdd1993.jpush.PushResult;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,14 +16,12 @@ import java.util.Objects;
  * <a href="https://cp.xuthus.cc/"></a>
  *
  * @author gcdd1993
- * @date 2020/12/23
- * @since 1.0.0
+ * @since 2020/12/23
  */
 @Slf4j
-public class CoolPushJPushImpl
+class CoolPushJPushImpl
         extends AbstractJPushImpl {
     // 0-domain, 1-mode, 2-sKey
-    private static final String DEFAULT_URL = "https://{0}/{1}/{2}";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.get("application/json; charset=utf-8");
 
     /**
@@ -43,25 +41,16 @@ public class CoolPushJPushImpl
     /**
      * 默认mode是send，私聊推送
      */
-    CoolPushJPushImpl(String domain, String sKey) {
-        this(domain, sKey, "send");
-    }
-
-    CoolPushJPushImpl(String domain, String sKey, String mode) {
-        super(domain);
-        this.sKey = sKey;
-        this.mode = mode;
+    CoolPushJPushImpl(Map<String, String> config) {
+        super(config.getOrDefault("domain", "push.xuthus.cc"));
+        this.sKey = Objects.requireNonNull(config.get("sKey"), "找不到QQ酷推配置：sKey");
+        this.mode = Objects.requireNonNull(config.get("mode"), "找不到QQ酷推配置：mode");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public PushResult push(String title, String content) {
-        String pushUrl = MessageFormat.format(
-                DEFAULT_URL,
-                domain,
-                mode,
-                sKey
-        );
+        String pushUrl = "https://" + domain + "/" + mode + "/" + sKey;
         try {
             RequestBody requestBody = RequestBody.Companion.create(content, MEDIA_TYPE_JSON);
             Request request = this.requestBuilder

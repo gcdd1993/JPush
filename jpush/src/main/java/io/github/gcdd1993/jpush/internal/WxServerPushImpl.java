@@ -9,7 +9,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,38 +16,31 @@ import java.util.Objects;
  * Server酱推送
  *
  * @author gcdd1993
- * @date 2020/12/23
- * @since 1.0.0
+ * @since 2020/12/23
  */
 @Slf4j
-public class WxServerPushImpl
+class WxServerPushImpl
         extends AbstractJPushImpl {
-    private static final String DEFAULT_URL = "https://{0}/{1}.send";
     /**
      * Server酱推送SCKEY，详情请查看
      * <a href="http://sc.ftqq.com/?c=code"></a>获取Server酱SCKEY
      */
     private final String scKey;
 
-    WxServerPushImpl(String domain, String scKey) {
-        super(domain);
-        this.scKey = scKey;
+    WxServerPushImpl(Map<String, String> config) {
+        super(config.getOrDefault("domain", "sctapi.ftqq.com"));
+        this.scKey = Objects.requireNonNull(config.get("scKey"), "找不到Server酱配置：scKey");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public PushResult push(String title, String content) {
-        String pushUrl = MessageFormat.format(
-                DEFAULT_URL,
-                domain,
-                scKey,
-                title,
-                content
-        );
+        String pushUrl = "https://" + domain + "/" + scKey + ".send";
         try {
             FormBody formBody = new FormBody.Builder()
                     .add("text", title)
                     .add("desp", content)
+                    .add("channel", "9")
                     .build();
             Request request = this.requestBuilder
                     .url(pushUrl)
@@ -60,7 +52,7 @@ public class WxServerPushImpl
             if (response.isSuccessful() && response.body() != null) {
                 String body = response.body().string();
                 Map<String, Object> res = JSON.parseObject(body, Map.class);
-                if (Objects.equals(res.get("success"), true)) {
+                if (Objects.equals(res.get("code"), 0)) {
                     return PushResult.success(body);
                 } else {
                     return PushResult.fail((int) res.get("errno"), (String) res.get("errmsg"));
@@ -73,4 +65,5 @@ public class WxServerPushImpl
             return PushResult.fail("调用Server酱服务失败");
         }
     }
+
 }

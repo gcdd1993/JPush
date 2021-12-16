@@ -1,27 +1,24 @@
 package io.github.gcdd1993.jpush.internal;
 
 import com.alibaba.fastjson.JSON;
+import io.github.gcdd1993.jpush.JPushType;
 import io.github.gcdd1993.jpush.PushResult;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * @author gcdd1993
- * @date 2020/12/23
- * @since 1.0.0
+ * @since 2020/12/23
  */
 @Slf4j
-public class PushPlusJPushImpl
+class PushPlusJPushImpl
         extends AbstractJPushImpl {
-    private static final String DEFAULT_URL = "https://{0}/send/";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.get("application/json; charset=utf-8");
 
     /**
@@ -46,15 +43,11 @@ public class PushPlusJPushImpl
      */
     private final String template;
 
-    PushPlusJPushImpl(String domain, String token, String topic) {
-        this(domain, token, topic, "html");
-    }
-
-    PushPlusJPushImpl(String domain, String token, String topic, String template) {
-        super(domain, null);
-        this.token = token;
-        this.topic = topic;
-        this.template = template;
+    PushPlusJPushImpl(Map<String, String> config) {
+        super(config.getOrDefault("domain", "pushplus.hxtrip.com"));
+        this.token = Objects.requireNonNull(config.get("token"), "找不到pushplus配置：token");
+        this.topic = Objects.requireNonNull(config.get("topic"), "找不到pushplus配置：topic");
+        this.template = Objects.requireNonNull(config.get("template"), "找不到pushplus配置：template");
         this.requestBuilder
                 .addHeader("Content-Type", "application/json");
     }
@@ -62,17 +55,14 @@ public class PushPlusJPushImpl
     @SuppressWarnings("unchecked")
     @Override
     public PushResult push(String title, String content) {
-        RequestData requestData = new RequestData(
-                token,
-                title,
-                content,
-                topic,
-                template
-        );
-        String pushUrl = MessageFormat.format(
-                DEFAULT_URL,
-                domain
-        );
+        RequestData requestData = RequestData.builder()
+                .token(token)
+                .title(title)
+                .content(content)
+                .topic(topic)
+                .template(template)
+                .build();
+        String pushUrl = "https://" + domain + "/send/";
         try {
             RequestBody requestBody = RequestBody.Companion.create(JSON.toJSONString(requestData), MEDIA_TYPE_JSON);
             Request request = this.requestBuilder
@@ -99,14 +89,13 @@ public class PushPlusJPushImpl
         }
     }
 
-    @RequiredArgsConstructor
-    @Getter
-    @Setter
-    private class RequestData {
-        private final String token;
-        private final String title;
-        private final String content;
-        private final String topic;
-        private final String template;
+    @Data
+    @Builder
+    private static class RequestData {
+        private String token;
+        private String title;
+        private String content;
+        private String topic;
+        private String template;
     }
 }
